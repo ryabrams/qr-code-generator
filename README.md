@@ -1,2 +1,6 @@
-# qr-code-generator
-A simple QR code generator.
+# SimpleQR
+Easily generate QR codes.
+
+# License
+
+MIT License
