@@ -1,6 +1,6 @@
-# SimpleQR
+# 📲 SimpleQR
 Easily generate QR codes.
 
-# License
+# 🪪 License
 
 MIT License
