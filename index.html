@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+```
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        padding: 40px;
+        max-width: 500px;
+        width: 100%;
+        animation: slideIn 0.5s ease-out;
+    }
+
+    .error-message {
+        display: none;
+        background: #f44336;
+        color: white;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .error-message.show {
+        display: block;
+    }
+
+    .success-message {
+        display: none;
+        background: #4CAF50;
+        color: white;
+        padding: 10px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        text-align: center;
+        animation: fadeIn 0.3s ease-out;
+    }
+
+    .success-message.show {
+        display: block;
+    }
+
+    .container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        padding: 40px;
+        max-width: 500px;
+        width: 100%;
+        animation: slideIn 0.5s ease-out;
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 30px;
+        font-size: 2.5em;
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 30px;
+        border-bottom: 2px solid #e0e0e0;
+    }
+
+    .tab {
+        flex: 1;
+        padding: 12px 20px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+        color: #666;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .tab:hover {
+        color: #2a5298;
+    }
+
+    .tab.active {
+        color: #2a5298;
+        font-weight: 600;
+    }
+
+    .tab.active::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    }
+
+    .tab-content {
+        display: none;
+        animation: fadeIn 0.3s ease-out;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+        color: #555;
+        font-weight: 500;
+    }
+
+    input[type="text"],
+    input[type="url"],
+    input[type="email"],
+    input[type="tel"] {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+
+    input:focus {
+        outline: none;
+        border-color: #2a5298;
+        box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
+    }
+
+    input.invalid {
+        border-color: #f44336;
+    }
+
+    input.invalid:focus {
+        box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.1);
+    }
+
+    .generate-btn {
+        width: 100%;
+        padding: 14px 24px;
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 18px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(30, 60, 114, 0.3);
+    }
+
+    .generate-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(30, 60, 114, 0.4);
+    }
+
+    .generate-btn:active {
+        transform: translateY(0);
+    }
+
+    #qrcode {
+        margin: 30px auto 0;
+        text-align: center;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 15px;
+        display: none;
+    }
+
+    #qrcode.show {
+        display: block;
+        animation: slideIn 0.3s ease-out;
+    }
+
+    #qrcode img {
+        margin: 0 auto;
+        border: 10px solid white;
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .download-btn {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .download-btn:hover {
+        background: #45a049;
+        transform: translateY(-1px);
+    }
+
+    .error {
+        color: #f44336;
+        font-size: 14px;
+        margin-top: 5px;
+        display: none;
+    }
+
+    #phone-error, #email-error {
+        display: none;
+    }
+
+    @media (max-width: 480px) {
+        .container {
+            padding: 30px 20px;
+        }
+        
+        h1 {
+            font-size: 2em;
+        }
+        
+        .tab {
+            font-size: 14px;
+            padding: 10px 15px;
+        }
+    }
+</style>
+```
+
+</head>
+<body>
+    <div class="container">
+        <div id="library-error" class="error-message">
+            QR Code library failed to load. Please refresh the page or check your internet connection.
+        </div>
+
+```
+    <h1>QR Code Generator</h1>
+    
+    <div class="tabs">
+        <button class="tab active" onclick="switchTab('url')">URL</button>
+        <button class="tab" onclick="switchTab('contact')">Contact</button>
+    </div>
+
+    <div id="url-tab" class="tab-content active">
+        <form id="url-form">
+            <div class="form-group">
+                <label for="url-input">Enter URL</label>
+                <input type="text" id="url-input" placeholder="https://example.com" required maxlength="2000">
+                <span class="error" id="url-error">Please enter a valid URL (e.g., example.com or https://example.com)</span>
+            </div>
+            <button type="submit" class="generate-btn">Generate QR Code</button>
+        </form>
+    </div>
+
+    <div id="contact-tab" class="tab-content">
+        <form id="contact-form">
+            <div class="form-group">
+                <label for="first-name-input">First Name *</label>
+                <input type="text" id="first-name-input" placeholder="John" required maxlength="50">
+            </div>
+            <div class="form-group">
+                <label for="last-name-input">Last Name *</label>
+                <input type="text" id="last-name-input" placeholder="Doe" required maxlength="50">
+            </div>
+            <div class="form-group">
+                <label for="phone-input">Phone Number *</label>
+                <input type="tel" id="phone-input" placeholder="+1 (555) 123-4567" required maxlength="30">
+                <span class="error" id="phone-error">Please enter a valid phone number</span>
+            </div>
+            <div class="form-group">
+                <label for="email-input">Email</label>
+                <input type="email" id="email-input" placeholder="john@example.com" maxlength="100">
+                <span class="error" id="email-error">Please enter a valid email address</span>
+            </div>
+            <div class="form-group">
+                <label for="company-input">Company</label>
+                <input type="text" id="company-input" placeholder="Acme Corp" maxlength="100">
+            </div>
+            <div class="form-group">
+                <label for="job-title-input">Job Title</label>
+                <input type="text" id="job-title-input" placeholder="Software Engineer" maxlength="100">
+            </div>
+            <button type="submit" class="generate-btn">Generate QR Code</button>
+        </form>
+    </div>
+
+    <div id="success-message" class="success-message">
+        QR Code generated successfully!
+    </div>
+    
+    <div id="qrcode"></div>
+</div>
+
+<script>
+    let currentQRCode = null;
+
+    // Check if QRCode library loaded successfully
+    window.addEventListener('load', function() {
+        if (typeof QRCode === 'undefined') {
+            document.getElementById('library-error').classList.add('show');
+            document.querySelectorAll('.generate-btn').forEach(btn => {
+                btn.disabled = true;
+                btn.textContent = 'Library Loading Failed';
+            });
+        }
+    });
+
+    function showSuccessMessage() {
+        const successMsg = document.getElementById('success-message');
+        successMsg.classList.add('show');
+        setTimeout(() => {
+            successMsg.classList.remove('show');
+        }, 3000);
+    }
+
+    function validateEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+
+    function validatePhone(phone) {
+        // Basic phone validation - accepts digits, spaces, parentheses, hyphens, and plus sign
+        const phoneRegex = /^[\d\s\-\+\(\)]+$/;
+        return phone.length >= 7 && phoneRegex.test(phone);
+    }
+
+    function switchTab(tab) {
+        // Update tab buttons
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        event.target.classList.add('active');
+        
+        // Update tab content
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.getElementById(`${tab}-tab`).classList.add('active');
+        
+        // Clear QR code when switching tabs
+        clearQRCode();
+        
+        // Hide success message
+        document.getElementById('success-message').classList.remove('show');
+    }
+
+    function clearQRCode() {
+        const qrcodeDiv = document.getElementById('qrcode');
+        qrcodeDiv.innerHTML = '';
+        qrcodeDiv.classList.remove('show');
+        // Properly dispose of the old QR code instance
+        if (currentQRCode) {
+            currentQRCode = null;
+        }
+    }
+
+    function generateQRCode(data) {
+        try {
+            clearQRCode();
+            
+            const qrcodeDiv = document.getElementById('qrcode');
+            
+            currentQRCode = new QRCode(qrcodeDiv, {
+                text: data,
+                width: 256,
+                height: 256,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            
+            // Add download button
+            setTimeout(() => {
+                const canvas = qrcodeDiv.querySelector('canvas');
+                if (canvas) {
+                    const downloadBtn = document.createElement('button');
+                    downloadBtn.className = 'download-btn';
+                    downloadBtn.textContent = 'Download QR Code';
+                    downloadBtn.onclick = () => downloadQRCode(canvas);
+                    qrcodeDiv.appendChild(downloadBtn);
+                }
+                qrcodeDiv.classList.add('show');
+                showSuccessMessage();
+            }, 100);
+        } catch (error) {
+            console.error('Error generating QR code:', error);
+            alert('Failed to generate QR code. Please try again.');
+        }
+    }
+
+    function downloadQRCode(canvas) {
+        const link = document.createElement('a');
+        link.download = 'qrcode.png';
+        link.href = canvas.toDataURL();
+        link.click();
+    }
+
+    // URL form handler
+    document.getElementById('url-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const urlInput = document.getElementById('url-input');
+        const urlError = document.getElementById('url-error');
+        
+        let url = urlInput.value.trim();
+        
+        // Check for empty input
+        if (!url) {
+            urlError.textContent = 'Please enter a URL';
+            urlError.style.display = 'block';
+            urlInput.classList.add('invalid');
+            return;
+        }
+        
+        // Add https:// if no protocol is specified
+        if (!url.match(/^https?:\/\//i)) {
+            url = 'https://' + url;
+        }
+        
+        // Basic URL validation
+        try {
+            const urlObj = new URL(url);
+            // Additional validation to ensure it's a valid web URL
+            if (!urlObj.hostname || !urlObj.hostname.includes('.')) {
+                throw new Error('Invalid domain');
+            }
+            urlError.style.display = 'none';
+            urlInput.classList.remove('invalid');
+            generateQRCode(url);
+        } catch (error) {
+            urlError.textContent = 'Please enter a valid URL (e.g., example.com or https://example.com)';
+            urlError.style.display = 'block';
+            urlInput.classList.add('invalid');
+        }
+    });
+
+    // Remove invalid class on input
+    document.getElementById('url-input').addEventListener('input', function() {
+        this.classList.remove('invalid');
+        document.getElementById('url-error').style.display = 'none';
+    });
+
+    // Contact form handler
+    document.getElementById('contact-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const firstName = document.getElementById('first-name-input').value.trim();
+        const lastName = document.getElementById('last-name-input').value.trim();
+        const phone = document.getElementById('phone-input').value.trim();
+        const email = document.getElementById('email-input').value.trim();
+        const company = document.getElementById('company-input').value.trim();
+        const jobTitle = document.getElementById('job-title-input').value.trim();
+        
+        let hasError = false;
+        
+        // Validate phone
+        const phoneInput = document.getElementById('phone-input');
+        const phoneError = document.getElementById('phone-error');
+        if (!validatePhone(phone)) {
+            phoneError.style.display = 'block';
+            phoneInput.classList.add('invalid');
+            hasError = true;
+        } else {
+            phoneError.style.display = 'none';
+            phoneInput.classList.remove('invalid');
+        }
+        
+        // Validate email if provided
+        const emailInput = document.getElementById('email-input');
+        const emailError = document.getElementById('email-error');
+        if (email && !validateEmail(email)) {
+            emailError.style.display = 'block';
+            emailInput.classList.add('invalid');
+            hasError = true;
+        } else {
+            emailError.style.display = 'none';
+            emailInput.classList.remove('invalid');
+        }
+        
+        if (hasError) {
+            return;
+        }
+        
+        // Function to escape vCard special characters
+        function escapeVCard(str) {
+            return str.replace(/[,;\\]/g, '\\$&').replace(/\n/g, '\\n');
+        }
+        
+        // Generate vCard format with proper line endings
+        let vcard = 'BEGIN:VCARD\r\nVERSION:3.0\r\n';
+        vcard += `FN:${escapeVCard(firstName + ' ' + lastName)}\r\n`;
+        vcard += `N:${escapeVCard(lastName)};${escapeVCard(firstName)};;;\r\n`;
+        
+        // Phone is now required, so it will always be present
+        vcard += `TEL:${escapeVCard(phone)}\r\n`;
+        
+        if (email) {
+            vcard += `EMAIL:${escapeVCard(email)}\r\n`;
+        }
+        
+        if (company) {
+            vcard += `ORG:${escapeVCard(company)}\r\n`;
+        }
+        
+        if (jobTitle) {
+            vcard += `TITLE:${escapeVCard(jobTitle)}\r\n`;
+        }
+        
+        vcard += 'END:VCARD';
+        
+        generateQRCode(vcard);
+    });
+
+    // Remove invalid class on input for contact form fields
+    document.getElementById('phone-input').addEventListener('input', function() {
+        this.classList.remove('invalid');
+        document.getElementById('phone-error').style.display = 'none';
+    });
+
+    document.getElementById('email-input').addEventListener('input', function() {
+        this.classList.remove('invalid');
+        document.getElementById('email-error').style.display = 'none';
+    });
+</script>
+```
+
+</body>
+</html>
